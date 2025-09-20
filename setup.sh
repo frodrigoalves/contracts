@@ -43,27 +43,42 @@ TEST_TIME_CAPSULE_ADDRESS=
 TEST_DIGITAL_LEGACY_ADDRESS=
 
 # Auth (Keycloak)
-KEYCLOAK_ISSUER_URL=http://localhost:8082/realms/singulai
+KEYCLOAK_ISSUER_URL=https://id.singulai.com/realms/singulai
 KEYCLOAK_AUDIENCE=singulai-api
-KEYCLOAK_JWKS_URL=http://localhost:8082/realms/singulai/protocol/openid-connect/certs
+KEYCLOAK_JWKS_URL=https://id.singulai.com/realms/singulai/protocol/openid-connect/certs
 
 # DB (Supabase)
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/singulai
+SUPABASE_URL=https://sb.singulai.com
+SUPABASE_API_KEY=your_supabase_api_key
+SUPABASE_DB_URL=postgres://postgres:postgres@localhost:5432/singulai
 
-# Storage (MinIO existente)
-MINIO_ENDPOINT=localhost
-MINIO_PORT=9000
+# Storage (MinIO)
+MINIO_ENDPOINT=mi.singulai.com
+MINIO_PORT=443
+MINIO_USE_SSL=true
 MINIO_ACCESS_KEY=admin
 MINIO_SECRET_KEY=admin123
 MINIO_BUCKET=singulai-test
 
-# IA (Ollama existente)
-OLLAMA_BASE_URL=http://localhost:11434
+# IA (Ollama)
+OLLAMA_BASE_URL=https://ol.singulai.com
 OLLAMA_DEFAULT_MODEL=llama2:7b
 
-# N8n (Automações)
-N8N_WEBHOOK_URL=http://localhost:5678/webhook/singulai
+# CMS (Directus)
+DIRECTUS_URL=https://cm.singulai.com
+DIRECTUS_API_KEY=your_directus_api_key
+
+# Automação (n8n)
+N8N_WEBHOOK_URL=https://n8.singulai.com/webhook/singulai
 N8N_API_KEY=your_n8n_api_key
+
+# Chatbot (Typebot)
+TYPEBOT_URL=https://tb.singulai.com
+TYPEBOT_API_KEY=your_typebot_api_key
+
+# Eventos (Webhook Server)
+EVENT_WEBHOOK_URL=https://ev.singulai.com/webhook
+EVENT_API_KEY=your_event_api_key
 
 # Endereços dos contratos oficiais (para uso futuro)
 SGL_TOKEN_ADDRESS=
@@ -92,26 +107,37 @@ else
     echo "   Por favor, verifique os logs acima para os endereços"
 fi
 
-# Verificar serviços existentes
-echo -e "\n🔍 Verificando serviços necessários..."
+# Verificar serviços necessários
+echo -e "\n🔍 Verificando serviços..."
 
-services=(
-    "Ollama:11434"
-    "MinIO:9000"
-    "Supabase:5432"
-    "Keycloak:8082"
-    "N8n:5678"
+declare -A services=(
+    ["Keycloak"]="id.singulai.com"
+    ["MinIO"]="mi.singulai.com"
+    ["Supabase"]="sb.singulai.com"
+    ["Ollama"]="ol.singulai.com"
+    ["n8n"]="n8.singulai.com"
+    ["Directus"]="cm.singulai.com"
+    ["Typebot"]="tb.singulai.com"
+    ["Events"]="ev.singulai.com"
 )
 
-for service in "${services[@]}"; do
-    name="${service%%:*}"
-    port="${service#*:}"
-    if nc -z localhost "$port" 2>/dev/null; then
-        echo "✅ $name está acessível na porta $port"
+for service in "${!services[@]}"; do
+    domain="${services[$service]}"
+    if curl -s -o /dev/null -w "%{http_code}" "https://$domain" | grep -q "^[23]"; then
+        echo "✅ $service está acessível em $domain"
     else
-        echo "❌ $name não está acessível na porta $port"
+        echo "❌ $service não está acessível em $domain"
     fi
 done
+
+echo -e "\n📋 Próximos passos:"
+echo "1. Configure as APIs keys no arquivo .env"
+echo "2. Configure o realm 'singulai' no Keycloak"
+echo "3. Crie o bucket 'singulai-test' no MinIO"
+echo "4. Configure os webhooks no n8n"
+echo "5. Configure o modelo do chatbot no Typebot"
+echo "6. Prepare as coleções no Directus CMS"
+echo "7. Configure as tabelas no Supabase"
 
 echo -e "\n🎉 Setup do MVP concluído!"
 echo "⚠️ Lembre-se: Estes são contratos de TESTE para validação do MVP."
