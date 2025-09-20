@@ -54,7 +54,7 @@ async function main() {
     throw new Error("Endereço do contrato não encontrado na transação de deploy");
   }
 
-  console.log("MockToken deployed to:", receipt.contractAddress);
+  console.log("MockToken implantado em:", receipt.contractAddress);
 }
 
 main().catch((err) => {

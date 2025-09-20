@@ -38,3 +38,24 @@
    ```
 
 > Ajuste a variável `CONTRACT_ADDRESS` e regenere o `.env` após o deploy para que os scripts reflitam o endereço mais recente.
+
+## Deploy gasless com ZeroDev
+1. Compile os contratos localmente (necessário para gerar os artefatos usados pelo deploy gasless):
+   ```bash
+   npx hardhat compile
+   ```
+2. Exporte as credenciais exigidas pelo SDK:
+   ```bash
+   export ZERODEV_PROJECT_ID="..."  # obtenha em https://dashboard.zerodev.app
+   export PRIVATE_KEY="0x..."        # mesma chave usada para o deploy tradicional
+   ```
+3. Execute o script TypeScript diretamente com ts-node:
+   ```bash
+   npx ts-node scripts/deploy-gasless.ts
+   ```
+4. A saída esperada confirma a criação da smart account, o hash do deploy e o endereço final do contrato:
+   ```
+   Smart Account address: 0x...
+   Gasless deploy txHash: 0x...
+   MockToken implantado em: 0x...
+   ```
