@@ -4,6 +4,7 @@ const { parseEther } = ethers.utils;
 async function main() {
     const [deployer] = await ethers.getSigners();
     console.log("Deploying MVP test contracts with account:", deployer.address);
+    console.log("Account balance:", ethers.utils.formatEther(await deployer.getBalance()));
 
     // 1. Deploy MockToken para testes
     console.log("\n1. Deploying MockToken (tSGL)...");
@@ -49,8 +50,23 @@ async function main() {
     console.log("Test DigitalLegacy deployed to:", digitalLegacy.address);
     await verify(digitalLegacy.address, [avatarBase.address]);
 
+    // 6. Autorizar contratos para interagir com o token
+    console.log("\n6. Authorizing contracts to interact with MockToken...");
+    
+    console.log("Authorizing AvatarBase...");
+    await token.authorizeContract(avatarBase.address);
+    
+    console.log("Authorizing AvatarWalletLink...");
+    await token.authorizeContract(walletLink.address);
+    
+    console.log("Authorizing TimeCapsule...");
+    await token.authorizeContract(timeCapsule.address);
+    
+    console.log("Authorizing DigitalLegacy...");
+    await token.authorizeContract(digitalLegacy.address);
+
     // Imprimir todos os endereços para referência
-    console.log("\n🎉 MVP test contracts deployed successfully!");
+    console.log("\n🎉 MVP test contracts deployed and authorized successfully!");
     console.log("\nTest Contract Addresses (Sepolia):");
     console.log("----------------------------------");
     console.log("MockToken (tSGL):", token.address);
@@ -80,7 +96,15 @@ async function main() {
         }
     }
     fs.writeFileSync(envFile, envContent);
-    console.log("\nTest contract addresses saved to .env file");
+    console.log("\nContract addresses saved to .env file");
+
+    console.log("\n📋 Next steps:");
+    console.log("1. Verify all contracts on Etherscan ✅");
+    console.log("2. Test token transfers and authorizations");
+    console.log("3. Create test avatars");
+    console.log("4. Test wallet linking");
+    console.log("5. Create test time capsules");
+    console.log("6. Test legacy profiles");
 
     console.log("\n⚠️ Note: These are TEST contracts for MVP validation.");
     console.log("The official SGL token will be deployed after MVP feedback.");
