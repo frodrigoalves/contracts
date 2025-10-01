@@ -1,3 +1,4 @@
+<<<<<<< ours
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 require("dotenv").config();
@@ -39,3 +40,14 @@ module.exports = {
     }
   }
 };
+=======
+import 'dotenv/config';
+import hardhatEthers from '@nomicfoundation/hardhat-ethers';
+
+const config = {
+  solidity: '0.8.20',
+  plugins: [hardhatEthers],
+};
+
+export default config;
+>>>>>>> theirs

@@ -1,4 +1,5 @@
 node_modules/
+<<<<<<< ours
 artifacts/
 cache/
 coverage/
@@ -6,3 +7,9 @@ coverage/
 .env.local
 .env.*.local
 *.secret
+=======
+.env
+artifacts/
+cache/
+
+>>>>>>> theirs
