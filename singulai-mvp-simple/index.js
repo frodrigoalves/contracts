@@ -18,8 +18,8 @@ const DOMAIN = process.env.DOMAIN || 'singulai.site';
 // Blockchain configuration
 const ethers = require('ethers');
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || 'https://sepolia.infura.io/v3/YOUR_INFURA_KEY';
-const SGL_TOKEN_ADDRESS = process.env.SGL_TOKEN_ADDRESS || '0x...'; // Update with deployed address
-const FAUCET_ADDRESS = process.env.FAUCET_ADDRESS || '0x...'; // Update with deployed faucet address
+const SGL_TOKEN_ADDRESS = process.env.SGL_TOKEN_ADDRESS || '0xF281a68ae5Baf227bADC1245AC5F9B2F53b7EDe1';
+const FAUCET_ADDRESS = process.env.FAUCET_ADDRESS || '0x83a7DEF4072487738979b1aa0816044B533CF2aE';
 const provider = new ethers.providers.JsonRpcProvider(SEPOLIA_RPC_URL);
 
 // ============================================================================
