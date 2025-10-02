@@ -1,11 +1,17 @@
-# SSH Configuration for SingulAI VPS Deploy
+# SSH Configuration for SingulAI VPS Deploy - Hostinger Brazil
 Host singulai-vps
-    HostName your_vps_ip_here
+    HostName 72.60.147.56
     User root
     IdentityFile ~/.ssh/id_ed25519
     IdentitiesOnly yes
     StrictHostKeyChecking no
     UserKnownHostsFile /dev/null
+
+Host srv993737.hstgr.cloud
+    HostName 72.60.147.56
+    User root
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
 
 # Para usar esta configuração:
 # 1. Copie para ~/.ssh/config

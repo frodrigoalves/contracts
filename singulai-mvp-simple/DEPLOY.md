@@ -37,12 +37,16 @@ chmod +x setup-ssh.sh
 cp .env.example .env
 ```
 
-Edite o arquivo `.env` com:
+Edite o arquivo `.env` com os dados da sua VPS:
 ```bash
-# VPS Configuration
-VPS_IP=123.456.789.012  # ← SUBSTITUA pelo IP real da sua VPS
+# VPS Configuration - Hostinger Brazil KVM 2
+VPS_IP=72.60.147.56
 VPS_USER=root
+VPS_HOSTNAME=srv993737.hstgr.cloud
 DOMAIN=singulai.site
+
+# VPS Specs: 2 CPU cores, 8GB RAM, 100GB disk, Ubuntu 22.04 LTS
+# Location: Brazil - São Paulo
 
 # SSH Configuration (já configurado)
 SSH_KEY_PATH=~/.ssh/id_ed25519
@@ -56,11 +60,14 @@ FAUCET_ADDRESS=0x83a7DEF4072487738979b1aa0816044B533CF2aE
 
 ### 1.5. Autorizar chave SSH na VPS
 ```bash
-# Copiar chave para VPS (substitua pelo IP real)
-ssh-copy-id -i ~/.ssh/id_ed25519.pub root@SEU_IP_VPS
+# Copiar chave para VPS Hostinger Brazil
+ssh-copy-id -i ~/.ssh/id_ed25519.pub root@72.60.147.56
 
 # Testar conexão
-ssh -i ~/.ssh/id_ed25519 root@SEU_IP_VPS
+ssh -i ~/.ssh/id_ed25519 root@72.60.147.56
+
+# Ou usando hostname
+ssh -i ~/.ssh/id_ed25519 root@srv993737.hstgr.cloud
 ```
 
 ### 2. Executar deploy
