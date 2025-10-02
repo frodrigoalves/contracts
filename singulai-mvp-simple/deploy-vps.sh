@@ -38,24 +38,56 @@ scp -i ~/.ssh/id_ed25519 singulai-mvp-deploy.tar.gz $VPS_USER@$VPS_IP:/tmp/
 # Executar comandos no VPS
 echo "🔧 Configurando aplicação no VPS..."
 ssh -i ~/.ssh/id_ed25519 $VPS_USER@$VPS_IP << 'ENDSSH'
-# Atualizar sistema
+# Verificar se há kernel update pendente
+if [ -f /var/run/reboot-required ]; then
+    echo "⚠️  Kernel update pendente detectado"
+    echo "🔄 O sistema será reiniciado após a instalação"
+fi
+
+# Atualizar sistema (sem interação)
+export DEBIAN_FRONTEND=noninteractive
 apt update && apt upgrade -y
 
-# Instalar Node.js 18, nginx, PM2 e certificados SSL
-curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-apt install -y nodejs nginx certbot python3-certbot-nginx sqlite3
+# Verificar e instalar dependências necessárias
+echo "🔍 Verificando dependências..."
 
-# Instalar PM2 globalmente
-npm install -g pm2
+# Node.js (pode já estar instalado)
+if ! command -v node &> /dev/null; then
+    echo "📦 Instalando Node.js..."
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+    apt install -y nodejs
+else
+    echo "✅ Node.js já instalado: $(node --version)"
+fi
+
+# Outras dependências
+apt install -y nginx certbot python3-certbot-nginx sqlite3
+
+# PM2 (verificar se já está instalado)
+if ! command -v pm2 &> /dev/null; then
+    echo "📦 Instalando PM2..."
+    npm install -g pm2
+else
+    echo "✅ PM2 já instalado: $(pm2 --version)"
+fi
 
 # Criar diretório da aplicação
 mkdir -p /var/www/singulai-mvp
 cd /var/www/singulai-mvp
 
+# Parar processos existentes se houver
+pm2 stop all 2>/dev/null || true
+
+# Backup de configurações existentes
+if [ -f .env ]; then
+    cp .env .env.backup.$(date +%Y%m%d_%H%M%S)
+fi
+
 # Extrair arquivos
 tar -xzf /tmp/singulai-mvp-deploy.tar.gz
 
 # Instalar dependências
+echo "📦 Instalando dependências Node.js..."
 npm install
 
 # Configurar ambiente de produção
