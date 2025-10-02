@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./interfaces/IDeviceAuth.sol";
 
 /**
@@ -47,8 +47,8 @@ contract AccessController is AccessControl, Pausable {
     event PolicyUpdated(bytes32 indexed policyId);
 
     constructor(address _deviceAuth) {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(POLICY_ADMIN_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(POLICY_ADMIN_ROLE, msg.sender);
         deviceAuth = IDeviceAuth(_deviceAuth);
 
         // Create default policies

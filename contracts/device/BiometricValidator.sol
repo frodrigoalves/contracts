@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./interfaces/IDeviceRegistry.sol";
 
@@ -50,8 +50,8 @@ contract BiometricValidator is AccessControl, Pausable {
     event FailedAttemptLogged(bytes32 indexed deviceId, bytes32 sessionId);
 
     constructor(address _deviceRegistry) {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(ADMIN_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(ADMIN_ROLE, msg.sender);
         deviceRegistry = IDeviceRegistry(_deviceRegistry);
     }
 
@@ -188,9 +188,9 @@ contract BiometricValidator is AccessControl, Pausable {
         }
 
         bytes32 messageHash = keccak256(abi.encodePacked(dataHash, deviceId));
-        address signer = messageHash.toEthSignedMessageHash().recover(signature);
+        address signer = ECDSA.recover(messageHash, signature);
         
-        (, bytes memory devicePublicKey) = deviceRegistry.getDevice(deviceId);
+        (,,,,,,, bytes memory devicePublicKey) = deviceRegistry.getDevice(deviceId);
         require(devicePublicKey.length > 0, "Invalid device");
 
         return keccak256(abi.encodePacked(signer)) == keccak256(devicePublicKey);

@@ -1,6 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const { time } = require("@nomicfoundation/hardhat-network-helpers");
+
 
 describe("Message", function () {
     let Message;
@@ -25,7 +25,7 @@ describe("Message", function () {
 
     describe("Message Creation", function () {
         it("Should create a message with valid parameters", async function () {
-            const unlockTime = (await time.latest()) + oneYear;
+            const unlockTime = ( (await ethers.provider.getBlock("latest")).timestamp ) + oneYear;
             
             await message.connect(creator).createMessage(
                 recipient.address,
@@ -45,7 +45,7 @@ describe("Message", function () {
         });
 
         it("Should emit MessageCreated event", async function () {
-            const unlockTime = (await time.latest()) + oneYear;
+            const unlockTime = ( (await ethers.provider.getBlock("latest")).timestamp ) + oneYear;
             
             await expect(
                 message.connect(creator).createMessage(
@@ -60,7 +60,7 @@ describe("Message", function () {
         });
 
         it("Should fail with invalid recipient", async function () {
-            const unlockTime = (await time.latest()) + oneYear;
+            const unlockTime = ( (await ethers.provider.getBlock("latest")).timestamp ) + oneYear;
             
             await expect(
                 message.connect(creator).createMessage(
@@ -73,7 +73,7 @@ describe("Message", function () {
         });
 
         it("Should fail with invalid IPFS CID", async function () {
-            const unlockTime = (await time.latest()) + oneYear;
+            const unlockTime = ( (await ethers.provider.getBlock("latest")).timestamp ) + oneYear;
             
             await expect(
                 message.connect(creator).createMessage(
@@ -86,7 +86,7 @@ describe("Message", function () {
         });
 
         it("Should fail with past unlock time", async function () {
-            const unlockTime = (await time.latest()) - oneDay;
+            const unlockTime = ( (await ethers.provider.getBlock("latest")).timestamp ) - oneDay;
             
             await expect(
                 message.connect(creator).createMessage(
@@ -99,7 +99,7 @@ describe("Message", function () {
         });
 
         it("Should fail with too far unlock time", async function () {
-            const unlockTime = (await time.latest()) + (101 * oneYear);
+            const unlockTime = ( (await ethers.provider.getBlock("latest")).timestamp ) + (101 * oneYear);
             
             await expect(
                 message.connect(creator).createMessage(
@@ -117,7 +117,7 @@ describe("Message", function () {
         let unlockTime;
 
         beforeEach(async function () {
-            unlockTime = (await time.latest()) + oneYear;
+            unlockTime = ( (await ethers.provider.getBlock("latest")).timestamp ) + oneYear;
             await message.connect(creator).createMessage(
                 recipient.address,
                 testIpfsCID,
@@ -128,7 +128,7 @@ describe("Message", function () {
         });
 
         it("Should unlock message after unlock time without trigger", async function () {
-            await time.increase(oneYear + oneDay);
+            await ethers.provider.send("evm_increaseTime", [oneYear + oneDay]); await ethers.provider.send("evm_mine");
             
             await message.connect(recipient).unlockMessage(messageId);
             
@@ -143,7 +143,7 @@ describe("Message", function () {
         });
 
         it("Should fail unlock by non-recipient", async function () {
-            await time.increase(oneYear + oneDay);
+            await ethers.provider.send("evm_increaseTime", [oneYear + oneDay]); await ethers.provider.send("evm_mine");
             
             await expect(
                 message.connect(other).unlockMessage(messageId)
@@ -151,7 +151,7 @@ describe("Message", function () {
         });
 
         it("Should fail double unlock", async function () {
-            await time.increase(oneYear + oneDay);
+            await ethers.provider.send("evm_increaseTime", [oneYear + oneDay]); await ethers.provider.send("evm_mine");
             await message.connect(recipient).unlockMessage(messageId);
             
             await expect(
@@ -160,7 +160,7 @@ describe("Message", function () {
         });
 
         it("Should require trigger validation if trigger exists", async function () {
-            await time.increase(oneYear + oneDay);
+            await ethers.provider.send("evm_increaseTime", [oneYear + oneDay]); await ethers.provider.send("evm_mine");
             
             await expect(
                 message.connect(recipient).unlockMessage(messageId)
@@ -187,7 +187,7 @@ describe("Message", function () {
         it("Should only allow owner to manage oracles", async function () {
             await expect(
                 message.connect(other).addOracle(oracle.address, testTrigger)
-            ).to.be.revertedWith("Ownable: caller is not the owner");
+            ).to.be.revertedWith("OwnableUnauthorizedAccount");
         });
     });
 
@@ -196,7 +196,7 @@ describe("Message", function () {
         let proofHash;
 
         beforeEach(async function () {
-            const unlockTime = (await time.latest()) + oneYear;
+            const unlockTime = ( (await ethers.provider.getBlock("latest")).timestamp ) + oneYear;
             await message.connect(creator).createMessage(
                 recipient.address,
                 testIpfsCID,
@@ -233,7 +233,7 @@ describe("Message", function () {
 
     describe("Message Queries", function () {
         beforeEach(async function () {
-            const unlockTime = (await time.latest()) + oneYear;
+            const unlockTime = ( (await ethers.provider.getBlock("latest")).timestamp ) + oneYear;
             await message.connect(creator).createMessage(
                 recipient.address,
                 testIpfsCID,
@@ -267,7 +267,7 @@ describe("Message", function () {
         it("Should prevent operations when paused", async function () {
             await message.pause();
             
-            const unlockTime = (await time.latest()) + oneYear;
+            const unlockTime = ( (await ethers.provider.getBlock("latest")).timestamp ) + oneYear;
             await expect(
                 message.connect(creator).createMessage(
                     recipient.address,
@@ -275,13 +275,13 @@ describe("Message", function () {
                     unlockTime,
                     testTrigger
                 )
-            ).to.be.revertedWith("Pausable: paused");
+            ).to.be.revertedWith("EnforcedPause");
         });
 
         it("Should only allow owner to pause/unpause", async function () {
             await expect(
                 message.connect(other).pause()
-            ).to.be.revertedWith("Ownable: caller is not the owner");
+            ).to.be.revertedWith("OwnableUnauthorizedAccount");
         });
     });
 });

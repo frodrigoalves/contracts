@@ -2,8 +2,8 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title DeviceRegistry
@@ -44,8 +44,8 @@ contract DeviceRegistry is AccessControl, Pausable, ReentrancyGuard {
     event DeviceTransferred(bytes32 indexed deviceId, address indexed from, address indexed to);
 
     constructor() {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(DEVICE_ADMIN_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(DEVICE_ADMIN_ROLE, msg.sender);
     }
 
     /**

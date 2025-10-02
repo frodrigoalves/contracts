@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./AvatarBase.sol";
@@ -64,7 +64,7 @@ contract AvatarPro is ReentrancyGuard, Ownable {
         uint256 amount
     );
 
-    constructor(address _avatarBase, address _sglToken) {
+    constructor(address _avatarBase, address _sglToken) Ownable(msg.sender) {
         require(_avatarBase != address(0), "Invalid AvatarBase address");
         require(_sglToken != address(0), "Invalid SGL token address");
         avatarBase = AvatarBase(_avatarBase);
@@ -82,8 +82,9 @@ contract AvatarPro is ReentrancyGuard, Ownable {
     ) 
         external 
     {
+        (, , , , address avatarOwner, , ) = avatarBase.avatars(_avatarId);
         require(
-            msg.sender == avatarBase.avatars(_avatarId).creator,
+            msg.sender == avatarOwner,
             "Not avatar creator"
         );
         require(_duration > 0, "Invalid duration");
@@ -135,10 +136,11 @@ contract AvatarPro is ReentrancyGuard, Ownable {
      */
     function endSession(uint256 _avatarId, uint256 _sessionId) external nonReentrant {
         Session storage session = avatarSessions[_avatarId][_sessionId];
+        (, , , , address avatarOwner, , ) = avatarBase.avatars(_avatarId);
         require(session.isActive, "Session not active");
         require(
             msg.sender == session.client || 
-            msg.sender == avatarBase.avatars(_avatarId).creator,
+            msg.sender == avatarOwner,
             "Not authorized"
         );
 
@@ -157,8 +159,9 @@ contract AvatarPro is ReentrancyGuard, Ownable {
      * @dev Withdraws accumulated revenue
      */
     function withdrawRevenue(uint256 _avatarId) external nonReentrant {
+        (, , , , address avatarOwner, , ) = avatarBase.avatars(_avatarId);
         require(
-            msg.sender == avatarBase.avatars(_avatarId).creator,
+            msg.sender == avatarOwner,
             "Not avatar creator"
         );
 
@@ -212,8 +215,9 @@ contract AvatarPro is ReentrancyGuard, Ownable {
      * @dev Emergency pause for a service
      */
     function toggleService(uint256 _avatarId) external {
+        (, , , , address avatarOwner, , ) = avatarBase.avatars(_avatarId);
         require(
-            msg.sender == avatarBase.avatars(_avatarId).creator,
+            msg.sender == avatarOwner,
             "Not avatar creator"
         );
         avatarServices[_avatarId].isActive = !avatarServices[_avatarId].isActive;

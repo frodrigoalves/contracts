@@ -31,19 +31,19 @@ describe("MockToken (tSGL)", function () {
     describe("Authorization System", function () {
         it("Should allow owner to authorize contracts", async function () {
             await token.authorizeContract(authorized.address);
-            expect(await token.isContractAuthorized(authorized.address)).to.be.true;
+            expect(await token.authorizedContracts(authorized.address)).to.be.true;
         });
 
         it("Should allow owner to revoke authorization", async function () {
             await token.authorizeContract(authorized.address);
-            await token.revokeContractAuthorization(authorized.address);
-            expect(await token.isContractAuthorized(authorized.address)).to.be.false;
+            await token.revokeContract(authorized.address);
+            expect(await token.authorizedContracts(authorized.address)).to.be.false;
         });
 
         it("Should fail if non-owner tries to authorize", async function () {
             await expect(
                 token.connect(user).authorizeContract(authorized.address)
-            ).to.be.revertedWith("Ownable: caller is not the owner");
+            ).to.be.revertedWith("OwnableUnauthorizedAccount");
         });
     });
 
@@ -106,7 +106,7 @@ describe("MockToken (tSGL)", function () {
             await token.pause();
             await expect(
                 token.transfer(user.address, parseEther("100"))
-            ).to.be.revertedWith("Pausable: paused");
+            ).to.be.revertedWith("EnforcedPause");
         });
     });
 
@@ -125,7 +125,7 @@ describe("MockToken (tSGL)", function () {
         it("Should fail if sender doesn't have enough tokens", async function () {
             await expect(
                 token.connect(user).transfer(userTwo.address, parseEther("2000"))
-            ).to.be.revertedWith("ERC20: transfer amount exceeds balance");
+            ).to.be.revertedWith("ERC20InsufficientBalance");
         });
 
         it("Should update allowances on approve", async function () {

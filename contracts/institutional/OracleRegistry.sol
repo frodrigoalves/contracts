@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./interfaces/IOracleRegistry.sol";
 
 /**
@@ -31,8 +31,8 @@ contract OracleRegistry is IOracleRegistry, AccessControl, Pausable {
     event MinValidationsUpdated(uint256 newValue);
 
     constructor() {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(ADMIN_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(ADMIN_ROLE, msg.sender);
     }
 
     /**

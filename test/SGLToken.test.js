@@ -124,7 +124,7 @@ describe("SGLToken", function () {
             await token.connect(admin).pause();
             await expect(
                 token.connect(admin).transfer(user.address, parseEther("1000"))
-            ).to.be.revertedWith("Pausable: paused");
+            ).to.be.revertedWith("EnforcedPause");
         });
 
         it("Should prevent non-admin from pausing", async function () {

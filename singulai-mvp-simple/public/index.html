@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SingulAI - Avatares Conversacionais Inteligentes</title>
+    <meta name="description" content="Converse com avatares especializados da SingulAI: Laura, Letícia e Pedro. Crie TimeCapsules e preserve memórias para o futuro.">
+    <meta name="keywords" content="SingulAI, avatar, AI, inteligência artificial, TimeCapsule, memórias, legado digital">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="SingulAI - Avatares Conversacionais">
+    <meta property="og:description" content="Converse com avatares especializados e crie TimeCapsules para o futuro">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://singulai.site">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-avatar">🤖</div>
+            <h2>SingulAI</h2>
+            <div class="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <p>Carregando avatares...</p>
+        </div>
+    </div>
+
+    <div class="container" id="mainContent" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🤖 SingulAI</h1>
+                    <p class="tagline">Avatares Conversacionais Inteligentes</p>
+                </div>
+                <div class="user-info" id="userInfo" style="display: none;">
+                    <div class="user-welcome">
+                        Olá, <span id="userName"></span>!
+                    </div>
+                    <button class="btn btn-outline" onclick="logout()">Sair</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Auth Section -->
+        <div class="section auth-section" id="authSection">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <h2>Bem-vindo à SingulAI</h2>
+                    <p>Entre ou cadastre-se para uma experiência personalizada, ou continue sem login</p>
+                </div>
+                
+                <div class="auth-tabs">
+                    <button class="tab-btn active" onclick="showLogin()">Entrar</button>
+                    <button class="tab-btn" onclick="showRegister()">Cadastrar</button>
+                </div>
+                
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form">
+                    <div class="input-group">
+                        <input type="email" id="loginEmail" placeholder="Seu email" required>
+                        <span class="input-icon">📧</span>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="loginPassword" placeholder="Sua senha" required>
+                        <span class="input-icon">🔒</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="btn-text">Entrar</span>
+                        <span class="btn-loading" style="display: none;">Entrando...</span>
+                    </button>
+                    <div class="form-error" id="loginError" style="display: none;"></div>
+                </form>
+                
+                <!-- Register Form -->
+                <form id="registerForm" class="auth-form" style="display: none;">
+                    <div class="input-group">
+                        <input type="text" id="registerName" placeholder="Seu nome completo" required>
+                        <span class="input-icon">👤</span>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" id="registerEmail" placeholder="Seu email" required>
+                        <span class="input-icon">📧</span>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="registerPassword" placeholder="Sua senha (min. 6 chars)" required minlength="6">
+                        <span class="input-icon">🔒</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="btn-text">Cadastrar</span>
+                        <span class="btn-loading" style="display: none;">Cadastrando...</span>
+                    </button>
+                    <div class="form-error" id="registerError" style="display: none;"></div>
+                </form>
+                
+                <div class="auth-divider">
+                    <span>ou</span>
+                </div>
+                
+                <button type="button" class="btn btn-secondary" onclick="continueWithoutLogin()">
+                    Continuar sem cadastro
+                </button>
+            </div>
+        </div>
+
+        <!-- Avatar Selection -->
+        <div class="section avatar-section" id="avatarSection" style="display: none;">
+            <div class="section-header">
+                <h2>Escolha seu Avatar Especializado</h2>
+                <p>Cada avatar tem uma personalidade única e especialidades diferentes</p>
+            </div>
+            
+            <div class="avatars-grid" id="avatarsGrid">
+                <!-- Avatares carregados dinamicamente via JavaScript -->
+            </div>
+            
+            <div class="avatar-info">
+                <p>💡 <strong>Dica:</strong> Você pode trocar de avatar a qualquer momento durante a conversa</p>
+            </div>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="section chat-section" id="chatSection" style="display: none;">
+            <div class="chat-header">
+                <div class="current-avatar" id="currentAvatarDisplay">
+                    <div class="avatar-info-display">
+                        <span class="avatar-icon" id="currentAvatarIcon">👩‍🎨</span>
+                        <div>
+                            <div class="avatar-name" id="currentAvatarName">Letícia</div>
+                            <div class="avatar-status">Online</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="btn btn-small" onclick="showAvatarSelection()">
+                        🔄 Trocar Avatar
+                    </button>
+                    <button class="btn btn-small" onclick="clearChat()">
+                        🗑️ Limpar Chat
+                    </button>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-message">
+                    <div class="avatar-intro">
+                        <div class="intro-icon" id="introIcon">👩‍🎨</div>
+                        <div class="intro-text" id="introText">
+                            Olá! Eu sou a Letícia! 💖 Vou te ajudar a criar mensagens emocionais lindas. O que você quer fazer?
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input-container">
+                <div class="chat-input">
+                    <input type="text" id="messageInput" placeholder="Digite sua mensagem..." maxlength="1000">
+                    <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+                        <span class="send-icon">📤</span>
+                    </button>
+                </div>
+                <div class="message-counter">
+                    <span id="messageCounter">0/1000</span>
+                </div>
+            </div>
+            
+            <div class="quick-actions" id="quickActions">
+                <button class="quick-btn" onclick="quickAction('timecapsule')">
+                    📦 Nova TimeCapsule
+                </button>
+                <button class="quick-btn" onclick="quickAction('memories')">
+                    💭 Organizar Memórias
+                </button>
+                <button class="quick-btn" onclick="quickAction('help')">
+                    ❓ Como Funciona
+                </button>
+            </div>
+            
+            <div class="user-actions">
+                <button class="action-btn" onclick="showTimeCapsules()">
+                    📦 Minhas TimeCapsules
+                </button>
+                <button class="action-btn" onclick="showConversations()">
+                    💬 Conversas Anteriores  
+                </button>
+            </div>
+        </div>
+
+        <!-- TimeCapsule Modal -->
+        <div class="modal" id="timecapsuleModal" style="display: none;">
+            <div class="modal-backdrop" onclick="closeModal('timecapsuleModal')"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>✨ Criar Nova TimeCapsule</h3>
+                    <button class="modal-close" onclick="closeModal('timecapsuleModal')">&times;</button>
+                </div>
+                <form id="timecapsuleForm" class="modal-form">
+                    <div class="input-group">
+                        <label>Título da TimeCapsule</label>
+                        <input type="text" id="capsuleTitle" placeholder="Ex: Carta para meu futuro eu" required maxlength="100">
+                        <small>Máximo 100 caracteres</small>
+                    </div>
+                    <div class="input-group">
+                        <label>Sua Mensagem</label>
+                        <textarea id="capsuleMessage" placeholder="Escreva aqui sua mensagem especial..." rows="6" required maxlength="5000"></textarea>
+                        <small>Máximo 5000 caracteres</small>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Para quem (opcional)</label>
+                            <input type="text" id="capsuleRecipientName" placeholder="Nome do destinatário">
+                        </div>
+                        <div class="input-group">
+                            <label>Email (opcional)</label>
+                            <input type="email" id="capsuleRecipientEmail" placeholder="email@exemplo.com">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Data de Entrega</label>
+                        <input type="date" id="capsuleDate" required>
+                        <small>Escolha quando essa TimeCapsule deve ser entregue</small>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('timecapsuleModal')">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-text">✨ Criar TimeCapsule</span>
+                            <span class="btn-loading" style="display: none;">Criando...</span>
+                        </button>
+                    </div>
+                    <div class="form-error" id="timecapsuleError" style="display: none;"></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- TimeCapsules List Modal -->
+        <div class="modal" id="timeCapsulesListModal" style="display: none;">
+            <div class="modal-backdrop" onclick="closeModal('timeCapsulesListModal')"></div>
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3>📦 Suas TimeCapsules</h3>
+                    <button class="modal-close" onclick="closeModal('timeCapsulesListModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="timeCapsulesContent">
+                        <div class="loading-state">Carregando TimeCapsules...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversations Modal -->
+        <div class="modal" id="conversationsModal" style="display: none;">
+            <div class="modal-backdrop" onclick="closeModal('conversationsModal')"></div>
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3>💬 Conversas Anteriores</h3>
+                    <button class="modal-close" onclick="closeModal('conversationsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="conversationsContent">
+                        <div class="loading-state">Carregando conversas...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div class="toast-container" id="toastContainer"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 SingulAI. Feito com ❤️ para preservar memórias e criar legados digitais.</p>
+            <div class="footer-links">
+                <a href="#" onclick="showInfo('privacy')">Privacidade</a>
+                <a href="#" onclick="showInfo('terms')">Termos</a>
+                <a href="#" onclick="showInfo('about')">Sobre</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

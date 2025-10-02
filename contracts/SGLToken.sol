@@ -1,54 +1,63 @@
 // SPDX-License-Identifier: MIT
-// SingulAI Project – MVP Test Token
+// SingulAI Project – Main Token
 // Author: Rodrigo Alves Ferreira
 
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 
 /**
- * @title MockToken
- * @dev Token de teste para o MVP da SingulAI
+ * @title SGLToken
+ * @dev Main token for SingulAI ecosystem
  */
-contract MockToken is ERC20, Ownable, Pausable {
+contract SGLToken is ERC20, AccessControl, Pausable {
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    
     // Contratos autorizados
     mapping(address => bool) public authorizedContracts;
-    
+
     // Eventos
     event ContractAuthorized(address indexed contractAddress);
     event ContractRevoked(address indexed contractAddress);
     event TokensLockedForCapsule(address indexed owner, uint256 amount, uint256 unlockTime);
     event TokensUnlockedFromCapsule(address indexed owner, uint256 amount);
     event AvatarMinted(address indexed owner, uint256 avatarId);
+    event TransferWithBurn(address indexed from, address indexed to, uint256 amount, uint256 burnAmount);
 
-    constructor(uint256 initialSupply) ERC20("SingulAI Test Token", "SGLT") Ownable(msg.sender) {
-        _mint(msg.sender, initialSupply);
-    }
+    uint256 public burnPercentage = 2; // 2% burn on transfer
 
-    // Funções de gerenciamento
-    function authorizeContract(address contractAddress) external onlyOwner {
+    constructor(address admin, uint256 initialSupply) ERC20("SingulAI Token", "SGL") {
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(MINTER_ROLE, admin);
+        _mint(admin, initialSupply);
+    }    // Funções de gerenciamento
+    function authorizeContract(address contractAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(contractAddress != address(0), "Endereco invalido");
         authorizedContracts[contractAddress] = true;
         emit ContractAuthorized(contractAddress);
     }
 
-    function revokeContract(address contractAddress) external onlyOwner {
+    function revokeContract(address contractAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(authorizedContracts[contractAddress], "Contrato nao autorizado");
         authorizedContracts[contractAddress] = false;
         emit ContractRevoked(contractAddress);
     }
 
-    function pause() external onlyOwner {
+    function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _pause();
     }
 
-    function unpause() external onlyOwner {
+    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _unpause();
     }
 
     // Funções de integração com os contratos do MVP
+    function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) {
+        _mint(to, amount);
+    }
+
     function mintAvatar(address to, uint256 avatarId, uint256 amount) external {
         require(authorizedContracts[msg.sender], "Apenas contratos autorizados");
         require(to != address(0), "Endereco invalido");
@@ -69,39 +78,30 @@ contract MockToken is ERC20, Ownable, Pausable {
         emit TokensUnlockedFromCapsule(to, amount);
     }
 
-    function mint(address to, uint256 amount) external onlyOwner {
-        _mint(to, amount);
-    }
-
-    function lockTokens(address owner, uint256 amount) external {
-        require(authorizedContracts[msg.sender], "Apenas contratos autorizados");
-        require(balanceOf(owner) >= amount, "Saldo insuficiente");
-        _transfer(owner, msg.sender, amount);
-    }
-
-    // Faucet
-    mapping(address => uint256) public lastFaucetRequest;
-    uint256 public constant FAUCET_AMOUNT = 100 * 10**18; // 100 tokens
-    uint256 public constant FAUCET_COOLDOWN = 24 hours;
-    
-    event FaucetRequested(address indexed user, uint256 amount);
-
-    function requestFaucet() external whenNotPaused {
-        require(block.timestamp >= lastFaucetRequest[msg.sender] + FAUCET_COOLDOWN, "Faucet cooldown active");
-        require(balanceOf(owner()) >= FAUCET_AMOUNT, "Insufficient faucet balance");
-        
-        lastFaucetRequest[msg.sender] = block.timestamp;
-        _transfer(owner(), msg.sender, FAUCET_AMOUNT);
-        emit FaucetRequested(msg.sender, FAUCET_AMOUNT);
-    }
-
-    // Funções base do ERC20 com pausável
+    // Funções base do ERC20 com pausável e burn
     function transfer(address to, uint256 amount) public override whenNotPaused returns (bool) {
-        return super.transfer(to, amount);
+        uint256 burnAmount = (amount * burnPercentage) / 100;
+        uint256 transferAmount = amount - burnAmount;
+        
+        _transfer(_msgSender(), to, transferAmount);
+        if (burnAmount > 0) {
+            _burn(_msgSender(), burnAmount);
+            emit TransferWithBurn(_msgSender(), to, transferAmount, burnAmount);
+        }
+        return true;
     }
 
     function transferFrom(address from, address to, uint256 amount) public override whenNotPaused returns (bool) {
-        return super.transferFrom(from, to, amount);
+        uint256 burnAmount = (amount * burnPercentage) / 100;
+        uint256 transferAmount = amount - burnAmount;
+        
+        _spendAllowance(from, _msgSender(), amount);
+        _transfer(from, to, transferAmount);
+        if (burnAmount > 0) {
+            _burn(from, burnAmount);
+            emit TransferWithBurn(from, to, transferAmount, burnAmount);
+        }
+        return true;
     }
 
     function approve(address spender, uint256 amount) public override whenNotPaused returns (bool) {

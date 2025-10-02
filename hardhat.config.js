@@ -1,7 +1,7 @@
-<<<<<<< ours
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
-require("dotenv").config();
+require("@nomiclabs/hardhat-waffle");
+require("dotenv").config({ path: __dirname + "/.env", override: true });
 
 function requireEnv(variableName) {
   const value = process.env[variableName];
@@ -40,14 +40,3 @@ module.exports = {
     }
   }
 };
-=======
-import 'dotenv/config';
-import hardhatEthers from '@nomicfoundation/hardhat-ethers';
-
-const config = {
-  solidity: '0.8.20',
-  plugins: [hardhatEthers],
-};
-
-export default config;
->>>>>>> theirs

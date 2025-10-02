@@ -29,7 +29,7 @@ describe("Device Integration Tests", function () {
         await deviceRegistry.deployed();
 
         BiometricValidator = await ethers.getContractFactory("BiometricValidator");
-        biometricValidator = await BiometricValidator.deploy();
+        biometricValidator = await BiometricValidator.deploy(deviceRegistry.address);
         await biometricValidator.deployed();
 
         DeviceAuth = await ethers.getContractFactory("DeviceAuth");

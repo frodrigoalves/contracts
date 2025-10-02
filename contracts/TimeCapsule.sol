@@ -1,8 +1,7 @@
-// SPDX-License-Identifier: MIT
+ls contracts/*.sol// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "./AvatarBase.sol";
 
 /**
@@ -10,8 +9,7 @@ import "./AvatarBase.sol";
  * @dev Manages time-locked capsules for SingulAI avatars
  */
 contract TimeCapsule is Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _capsuleIds;
+    uint256 private _capsuleIds;
 
     AvatarBase public avatarBase;
 
@@ -58,8 +56,8 @@ contract TimeCapsule is Ownable {
         require(owner == msg.sender, "Not avatar owner");
         require(active, "Avatar not active");
 
-        _capsuleIds.increment();
-        uint256 capsuleId = _capsuleIds.current();
+    _capsuleIds++;
+    uint256 capsuleId = _capsuleIds;
 
         capsules[capsuleId] = Capsule({
             avatarId: avatarId,

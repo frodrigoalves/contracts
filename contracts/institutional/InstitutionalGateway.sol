@@ -2,8 +2,8 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./interfaces/IProofValidator.sol";
 import "./interfaces/IOracleRegistry.sol";
 
@@ -36,8 +36,8 @@ contract InstitutionalGateway is AccessControl, Pausable, ReentrancyGuard {
     event ProofValidated(bytes32 indexed proofHash, bool valid);
 
     constructor(address _proofValidator, address _oracleRegistry) {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(ADMIN_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(ADMIN_ROLE, msg.sender);
         proofValidator = IProofValidator(_proofValidator);
         oracleRegistry = IOracleRegistry(_oracleRegistry);
     }

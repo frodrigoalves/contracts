@@ -1,7 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { parseEther } = ethers.utils;
-const { time } = require("@nomicfoundation/hardhat-network-helpers");
 
 describe("EscrowContract", function () {
     let SGLToken;
@@ -96,13 +95,13 @@ describe("EscrowContract", function () {
         let unlockTime;
 
         beforeEach(async function () {
-            unlockTime = (await time.latest()) + 3600; // 1 hour from now
+            unlockTime = ( (await ethers.provider.getBlock("latest")).timestamp ) + 3600; // 1 hour from now
             await token.approve(escrow.address, lockAmount);
             await escrow.lockFunds(capsuleId, beneficiary.address, lockAmount, unlockTime);
         });
 
         it("Should release funds after unlock time", async function () {
-            await time.increase(3601); // 1 hour + 1 second
+            await ethers.provider.send("evm_increaseTime", [3601]); await ethers.provider.send("evm_mine"); // 1 hour + 1 second
             
             await escrow.connect(beneficiary).releaseFunds(capsuleId);
             
@@ -112,7 +111,7 @@ describe("EscrowContract", function () {
         });
 
         it("Should emit FundsReleased event", async function () {
-            await time.increase(3601);
+            await ethers.provider.send("evm_increaseTime", [3601]); await ethers.provider.send("evm_mine");
             
             await expect(escrow.connect(beneficiary).releaseFunds(capsuleId))
                 .to.emit(escrow, "FundsReleased")
@@ -126,7 +125,7 @@ describe("EscrowContract", function () {
         });
 
         it("Should prevent release from non-beneficiary", async function () {
-            await time.increase(3601);
+            await ethers.provider.send("evm_increaseTime", [3601]); await ethers.provider.send("evm_mine");
             
             await expect(
                 escrow.connect(other).releaseFunds(capsuleId)
@@ -134,7 +133,7 @@ describe("EscrowContract", function () {
         });
 
         it("Should prevent double release", async function () {
-            await time.increase(3601);
+            await ethers.provider.send("evm_increaseTime", [3601]); await ethers.provider.send("evm_mine");
             await escrow.connect(beneficiary).releaseFunds(capsuleId);
             
             await expect(
@@ -164,7 +163,7 @@ describe("EscrowContract", function () {
 
     describe("Edge Cases", function () {
         it("Should handle zero amount locks", async function () {
-            const unlockTime = (await time.latest()) + 3600;
+            const unlockTime = ( (await ethers.provider.getBlock("latest")).timestamp ) + 3600;
             await token.approve(escrow.address, 0);
             
             await expect(
@@ -173,7 +172,7 @@ describe("EscrowContract", function () {
         });
 
         it("Should handle past unlock times", async function () {
-            const pastTime = (await time.latest()) - 3600;
+            const pastTime = ( (await ethers.provider.getBlock("latest")).timestamp ) - 3600;
             await token.approve(escrow.address, lockAmount);
             
             await escrow.lockFunds(1, beneficiary.address, lockAmount, pastTime);
@@ -183,13 +182,13 @@ describe("EscrowContract", function () {
         });
 
         it("Should handle multiple releases at same time", async function () {
-            const unlockTime = (await time.latest()) + 3600;
+            const unlockTime = ( (await ethers.provider.getBlock("latest")).timestamp ) + 3600;
             await token.approve(escrow.address, lockAmount.mul(2));
             
             await escrow.lockFunds(1, beneficiary.address, lockAmount, unlockTime);
             await escrow.lockFunds(2, beneficiary.address, lockAmount, unlockTime);
             
-            await time.increase(3601);
+            await ethers.provider.send("evm_increaseTime", [3601]); await ethers.provider.send("evm_mine");
             
             await escrow.connect(beneficiary).releaseFunds(1);
             await escrow.connect(beneficiary).releaseFunds(2);

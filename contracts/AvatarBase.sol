@@ -2,15 +2,13 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 /**
  * @title AvatarBase
  * @dev Base contract for SingulAI digital avatars
  */
 contract AvatarBase is Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _avatarIds;
+    uint256 private _avatarIds;
 
     struct Avatar {
         string code;        // A=Laura, B=Letícia, C=Pedro
@@ -41,8 +39,8 @@ contract AvatarBase is Ownable {
         require(bytes(code).length > 0, "Invalid avatar code");
         require(owner != address(0), "Invalid owner address");
 
-        _avatarIds.increment();
-        uint256 newAvatarId = _avatarIds.current();
+        _avatarIds++;
+        uint256 newAvatarId = _avatarIds;
 
         avatars[newAvatarId] = Avatar({
             code: code,

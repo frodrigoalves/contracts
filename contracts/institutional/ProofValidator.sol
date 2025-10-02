@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./interfaces/IProofValidator.sol";
 
@@ -33,8 +33,8 @@ contract ProofValidator is IProofValidator, AccessControl, Pausable {
     event MultiSigProofCompleted(bytes32 indexed proofHash);
 
     constructor() {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(ADMIN_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(ADMIN_ROLE, msg.sender);
     }
 
     /**
@@ -74,7 +74,7 @@ contract ProofValidator is IProofValidator, AccessControl, Pausable {
         address institution
     ) external override onlyRole(VALIDATOR_ROLE) whenNotPaused returns (bool) {
         bytes32 messageHash = keccak256(abi.encodePacked(proofHash, proofData));
-        address signer = messageHash.toEthSignedMessageHash().recover(signature);
+        address signer = ECDSA.recover(messageHash, signature);
         
         require(signer == institution, "Invalid signature");
 

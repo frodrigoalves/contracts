@@ -25,8 +25,8 @@ describe("DeviceDataRegistry", function () {
         await deviceDataRegistry.deployed();
 
         // Setup roles
-        const DATA_MANAGER_ROLE = await deviceDataRegistry.DATA_MANAGER_ROLE();
-        await deviceDataRegistry.grantRole(DATA_MANAGER_ROLE, dataManager.address);
+        const DATA_ADMIN_ROLE = await deviceDataRegistry.DATA_ADMIN_ROLE();
+        await deviceDataRegistry.grantRole(DATA_ADMIN_ROLE, dataManager.address);
 
         // Generate test device ID
         deviceId = ethers.utils.id("test_device");

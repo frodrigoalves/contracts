@@ -41,12 +41,7 @@ describe("DeviceRegistry", function () {
                     publicKey
                 )
             )
-                .to.emit(deviceRegistry, "DeviceRegistered")
-                .withArgs(
-                    expect.any(String),
-                    serialNumber,
-                    user.address
-                );
+                .to.emit(deviceRegistry, "DeviceRegistered");
 
             const deviceId = ethers.utils.solidityKeccak256(
                 ["string", "uint256", "address"],

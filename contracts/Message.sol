@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 /**
@@ -29,7 +29,7 @@ contract Message is ReentrancyGuard, Ownable, Pausable {
     
     // Contadores e limites
     uint256 public messageCount;
-    uint256 public constant MAX_UNLOCK_TIME = 100 years;
+    uint256 public constant MAX_UNLOCK_TIME = 100 * 365 * 24 * 3600;
     
     // Oráculos e validadores
     mapping(address => bool) public authorizedOracles;
@@ -67,7 +67,7 @@ contract Message is ReentrancyGuard, Ownable, Pausable {
         _;
     }
 
-    constructor() {
+    constructor() Ownable(msg.sender) {
         // Inicialização do contrato
     }
 
