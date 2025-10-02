@@ -22,7 +22,7 @@ fi
 
 # Criar backup da aplicação atual
 echo "💾 Criando backup..."
-ssh $VPS_USER@$VPS_IP << 'ENDSSH'
+ssh -i ~/.ssh/id_ed25519 $VPS_USER@$VPS_IP << 'ENDSSH'
 cd /var/www
 if [ -d "singulai-mvp" ]; then
     cp -r singulai-mvp singulai-mvp-backup-$(date +%Y%m%d_%H%M%S)
@@ -41,11 +41,11 @@ tar -czf singulai-mvp-update.tar.gz \
 
 # Upload para VPS
 echo "📤 Enviando arquivos atualizados..."
-scp singulai-mvp-update.tar.gz $VPS_USER@$VPS_IP:/tmp/
+scp -i ~/.ssh/id_ed25519 singulai-mvp-update.tar.gz $VPS_USER@$VPS_IP:/tmp/
 
 # Atualizar aplicação no VPS
 echo "🔧 Atualizando aplicação..."
-ssh $VPS_USER@$VPS_IP << 'ENDSSH'
+ssh -i ~/.ssh/id_ed25519 $VPS_USER@$VPS_IP << 'ENDSSH'
 cd /var/www/singulai-mvp
 
 # Parar aplicação
@@ -82,4 +82,4 @@ echo ""
 echo "🎉 Atualização concluída!"
 echo ""
 echo "📊 Status da aplicação:"
-ssh $VPS_USER@$VPS_IP "pm2 status"
+ssh -i ~/.ssh/id_ed25519 $VPS_USER@$VPS_IP "pm2 status"

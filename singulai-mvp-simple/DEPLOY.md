@@ -5,27 +5,62 @@
 ## 🔧 Pré-requisitos
 
 1. **VPS com Ubuntu 20.04+ ou Debian 10+**
-2. **Acesso SSH configurado**
+2. **Acesso SSH configurado com chave ed25519**
 3. **Domínio apontado para o IP da VPS**
+
+### 🔑 Configuração SSH
+
+Sua chave pública SSH:
+```
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMiP/EvRcH3kfh6wkto6mrPGRDSA0kn49z8jE76aXPi5 f.rodrigoalves12@gmail.com
+```
+
+**Configure o SSH:**
+```bash
+# 1. Execute o script de configuração SSH
+chmod +x setup-ssh.sh
+./setup-ssh.sh
+
+# 2. Copie sua chave para a VPS (substitua pelo IP real)
+ssh-copy-id -i ~/.ssh/id_ed25519.pub root@SEU_IP_VPS
+```
 
 ## 🚀 Deploy Automático
 
-### 1. Configurar variáveis de ambiente
+### 1. Configurar SSH e variáveis de ambiente
 ```bash
+# Configurar SSH
+chmod +x setup-ssh.sh
+./setup-ssh.sh
+
+# Configurar environment
 cp .env.example .env
 ```
 
 Edite o arquivo `.env` com:
 ```bash
 # VPS Configuration
-VPS_IP=123.456.789.012
+VPS_IP=123.456.789.012  # ← SUBSTITUA pelo IP real da sua VPS
 VPS_USER=root
 DOMAIN=singulai.site
+
+# SSH Configuration (já configurado)
+SSH_KEY_PATH=~/.ssh/id_ed25519
+SSH_PUBLIC_KEY=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMiP/EvRcH3kfh6wkto6mrPGRDSA0kn49z8jE76aXPi5 f.rodrigoalves12@gmail.com
 
 # Blockchain (já configurado)
 SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_INFURA_KEY
 SGL_TOKEN_ADDRESS=0xF281a68ae5Baf227bADC1245AC5F9B2F53b7EDe1
 FAUCET_ADDRESS=0x83a7DEF4072487738979b1aa0816044B533CF2aE
+```
+
+### 1.5. Autorizar chave SSH na VPS
+```bash
+# Copiar chave para VPS (substitua pelo IP real)
+ssh-copy-id -i ~/.ssh/id_ed25519.pub root@SEU_IP_VPS
+
+# Testar conexão
+ssh -i ~/.ssh/id_ed25519 root@SEU_IP_VPS
 ```
 
 ### 2. Executar deploy

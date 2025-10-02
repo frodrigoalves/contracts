@@ -33,11 +33,11 @@ tar -czf singulai-mvp-deploy.tar.gz \
 
 # Upload para VPS
 echo "📤 Enviando arquivos para VPS..."
-scp singulai-mvp-deploy.tar.gz $VPS_USER@$VPS_IP:/tmp/
+scp -i ~/.ssh/id_ed25519 singulai-mvp-deploy.tar.gz $VPS_USER@$VPS_IP:/tmp/
 
 # Executar comandos no VPS
 echo "🔧 Configurando aplicação no VPS..."
-ssh $VPS_USER@$VPS_IP << 'ENDSSH'
+ssh -i ~/.ssh/id_ed25519 $VPS_USER@$VPS_IP << 'ENDSSH'
 # Atualizar sistema
 apt update && apt upgrade -y
 
@@ -72,7 +72,7 @@ ENDSSH
 
 # Configurar Nginx
 echo "🌐 Configurando Nginx..."
-ssh $VPS_USER@$VPS_IP << ENDSSH
+ssh -i ~/.ssh/id_ed25519 $VPS_USER@$VPS_IP << ENDSSH
 # Criar configuração do Nginx
 cat > /etc/nginx/sites-available/$DOMAIN << 'EOF'
 server {
@@ -143,7 +143,7 @@ ENDSSH
 
 # Iniciar aplicação com PM2
 echo "🚀 Iniciando aplicação com PM2..."
-ssh $VPS_USER@$VPS_IP << 'ENDSSH'
+ssh -i ~/.ssh/id_ed25519 $VPS_USER@$VPS_IP << 'ENDSSH'
 cd /var/www/singulai-mvp
 
 # Iniciar com PM2
@@ -160,7 +160,7 @@ ENDSSH
 
 # Configurar SSL com Let's Encrypt
 echo "🔒 Configurando SSL com Let's Encrypt..."
-ssh $VPS_USER@$VPS_IP << ENDSSH
+ssh -i ~/.ssh/id_ed25519 $VPS_USER@$VPS_IP << ENDSSH
 # Obter certificado SSL
 certbot --nginx -d $DOMAIN -d www.$DOMAIN --non-interactive --agree-tos --email admin@$DOMAIN
 

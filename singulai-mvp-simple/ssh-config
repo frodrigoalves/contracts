@@ -1,0 +1,13 @@
+# SSH Configuration for SingulAI VPS Deploy
+Host singulai-vps
+    HostName your_vps_ip_here
+    User root
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+
+# Para usar esta configuração:
+# 1. Copie para ~/.ssh/config
+# 2. Substitua 'your_vps_ip_here' pelo IP real da VPS
+# 3. Use: ssh singulai-vps
