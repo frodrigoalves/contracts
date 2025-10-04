@@ -1,5 +1,5 @@
 require("@nomiclabs/hardhat-ethers");
-require("@nomiclabs/hardhat-etherscan");
+require("@nomicfoundation/hardhat-verify");
 
 module.exports = {
   solidity: "0.8.20",

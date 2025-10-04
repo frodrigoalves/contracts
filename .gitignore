@@ -1,5 +1,4 @@
 node_modules/
-<<<<<<< ours
 artifacts/
 cache/
 coverage/
@@ -7,9 +6,31 @@ coverage/
 .env.local
 .env.*.local
 *.secret
-=======
-.env
-artifacts/
-cache/
 
->>>>>>> theirs
+# Hardhat files
+typechain/
+typechain-types/
+
+# Test coverage
+coverage.json
+.coverage_artifacts
+.coverage_cache
+.coverage_contracts
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
