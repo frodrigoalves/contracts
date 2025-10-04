@@ -2,24 +2,17 @@
   "name": "contracts",
   "version": "1.0.0",
   "description": "",
-<<<<<<< ours
   "main": "hardhat.config.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-=======
-  "main": "index.js",
-  "scripts": {
     "check:balance": "hardhat run --no-compile scripts/check-balance.js",
     "test": "echo \"No tests defined\""
->>>>>>> theirs
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-<<<<<<< ours
   "type": "commonjs",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.3",
@@ -36,15 +29,5 @@
     "dotenv": "^17.2.2",
     "ethers": "^5.8.0",
     "viem": "^2.17.0"
-=======
-  "type": "module",
-  "dependencies": {
-    "dotenv": "^17.2.2"
-  },
-  "devDependencies": {
-    "@nomicfoundation/hardhat-ethers": "^4.0.1",
-    "ethers": "^6.15.0",
-    "hardhat": "^3.0.6"
->>>>>>> theirs
   }
 }
