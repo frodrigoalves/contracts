@@ -7,8 +7,8 @@
     "test": "hardhat test"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.6",
     "@chainlink/contracts": "^0.8.0",
+    "@openzeppelin/contracts": "4.9.6",
     "dotenv": "^17.2.2",
     "ethers": "^5.8.0"
   },
